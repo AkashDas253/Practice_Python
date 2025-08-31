@@ -12,30 +12,31 @@ class Calculator(tk.Tk):
 
     def create_widgets(self):
         self.display = tk.Entry(self, font=("Arial", 20), bd=10, relief=tk.RIDGE, justify='right')
-        self.display.grid(row=0, column=0, columnspan=4, padx=10, pady=20, sticky="nsew")
+        self.display.grid(row=0, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
         buttons = [
-            ('7', 1, 0), ('8', 1, 1), ('9', 1, 2), ('/', 1, 3),
-            ('4', 2, 0), ('5', 2, 1), ('6', 2, 2), ('*', 2, 3),
-            ('1', 3, 0), ('2', 3, 1), ('3', 3, 2), ('-', 3, 3),
-            ('0', 4, 0), ('.', 4, 1), ('=', 4, 2), ('+', 4, 3),
-            ('C', 5, 0)
+            ('C', 1, 0), ('(', 1, 1), (')', 1, 2), ('/', 1, 3),
+            ('7', 2, 0), ('8', 2, 1), ('9', 2, 2), ('*', 2, 3),
+            ('4', 3, 0), ('5', 3, 1), ('6', 3, 2), ('-', 3, 3),
+            ('1', 4, 0), ('2', 4, 1), ('3', 4, 2), ('+', 4, 3),
+            ('0', 5, 0), ('.', 5, 1), ('=', 5, 2)
         ]
         for (text, row, col) in buttons:
             if text == 'C':
                 btn = tk.Button(self, text=text, font=("Arial", 16), command=self.clear)
-                btn.grid(row=row, column=col, columnspan=4, sticky="nsew", padx=5, pady=5)
             elif text == '=':
                 btn = tk.Button(self, text=text, font=("Arial", 16), command=self.calculate)
-                btn.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
             else:
                 btn = tk.Button(self, text=text, font=("Arial", 16), command=lambda t=text: self.on_click(t))
-                btn.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
+            btn.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
         for i in range(6):
             self.grid_rowconfigure(i, weight=1)
         for i in range(4):
             self.grid_columnconfigure(i, weight=1)
 
     def on_click(self, char):
+        brackets = {'(': ')'}
+        closing = {')'}
+        opening = {'('}
         if char in '+-*/.':
             # Prevent consecutive operators or decimals
             if not self.expression:
@@ -49,14 +50,14 @@ class Calculator(tk.Tk):
                 return
             else:
                 self.expression += char
-        elif char == '(':  # Opening bracket
-            if not self.expression or self.expression[-1] in '+-*/(':
+        elif char in opening:
+            if not self.expression or self.expression[-1] in '+-*/(' or self.expression[-1] in opening:
                 self.expression += char
             else:
                 return
-        elif char == ')':  # Closing bracket
+        elif char in closing:
             # Only add if there is an unmatched opening bracket
-            if self.expression.count('(') > self.expression.count(')') and (self.expression and self.expression[-1] not in '+-*/('):
+            if self.expression.count('(') > self.expression.count(')') and (self.expression and self.expression[-1] not in '+-*/(' and self.expression[-1] not in opening):
                 self.expression += char
             else:
                 return
