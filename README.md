@@ -2,7 +2,9 @@
 
 ### Mini projects
 - [Server](https://github.com/AkashDas253/Practice_Python/tree/server)
-- []
+- [Calculator](https://github.com/AkashDas253/Practice_Python/tree/calculator)
+
+
 
 <!-- Got it 👍 — since you’re already **making a server**, let’s push into **heavier Python projects** that build strong **systems, performance, and infra skills** (very relevant for HFT prep too).
 
