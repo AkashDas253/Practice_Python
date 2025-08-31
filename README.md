@@ -8,7 +8,7 @@ This repository contains two calculator applications built with Python and Tkint
 - Usage: Run the file to open a simple GUI calculator.
 
 ### 2. Scientific Calculator
-- Location: `sci_cal/main.py`
+- Location: `scientific_calculator/main.py`
 - Features: All standard operations plus:
   - Square root (√)
   - Logarithm (log)
