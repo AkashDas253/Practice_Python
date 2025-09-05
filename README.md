@@ -1,4 +1,4 @@
-# Snake and Bait Game 
+# Snake and Bait Game
 
 This is a graphical version of the classic Snake game using Python's `pygame` library.
 
@@ -11,17 +11,20 @@ This is a graphical version of the classic Snake game using Python's `pygame` li
    ```
 3. Run the game:
    ```powershell
-   python snake_and_bait_pygame.py
+   python snake_and_bait/game.py
    ```
 
 ## Controls
 - Arrow keys: Move the snake
 - Q: Quit the game
+- Mouse: Click buttons to Start/Stop or Restart the game
 
 ## Features
+- Modern interface with bordered game area inside a larger main window
+- Score displayed at the top left, outside the game area
+- Start/Stop and Restart buttons at the bottom of the window
 - Simple grid-based snake movement
 - Random bait generation
-- Score display
 - Game over screen
 
 ---
