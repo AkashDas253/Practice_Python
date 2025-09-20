@@ -27,4 +27,4 @@ This repository contains two calculator applications built with Python and Tkint
    - Scientific: `python scientific_calculator/main.py`
 
 ---
-Feel free to modify or extend these calculators for your own practice!
+
