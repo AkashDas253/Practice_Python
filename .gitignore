@@ -1,2 +1,7 @@
 .venv_*/
+<<<<<<< HEAD
 __pycache__/
+=======
+__pycache__/
+*.pyc
+>>>>>>> server
