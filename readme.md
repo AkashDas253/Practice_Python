@@ -11,3 +11,4 @@
 ### Mini Projects
 - [Server](projects/server/README.md)
 - [Trading Engine](projects/trading_engine/README.md)
+- [Markdown Viewer TUI](projects/markdown_viewer_tui/readme.md)
