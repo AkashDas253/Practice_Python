@@ -55,7 +55,7 @@ class MarkdownScreen(Screen):
     def on_key(self, event):
         if event.key in ("q", "Q"):
             self.app.exit()
-        elif event.key == "escape":
+        elif event.key == "escape" or event.key == "e":
             self.app.pop_screen()
 
 class MainApp(App):
