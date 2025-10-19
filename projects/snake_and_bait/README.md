@@ -11,7 +11,7 @@ This is a graphical version of the classic Snake game using Python's `pygame` li
    ```
 3. Run the game:
    ```powershell
-   python snake_and_bait/game.py
+   python game.py
    ```
 
 ## Controls
