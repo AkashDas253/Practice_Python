@@ -2,7 +2,7 @@
 
 ## Overview
 This project is a classic Snake and Ladder game implemented in Python with a graphical user interface (GUI) using Tkinter.
-All gameplay is handled through the GUI.
+All gameplay is handled through the GUI. The game supports 2–4 players, with custom color selection and automatic ranking based on the order players reach the end.
 
 ## How to Run
 
@@ -15,10 +15,13 @@ All gameplay is handled through the GUI.
    ```
 
 ## Features
-- Two-player gameplay
+- 2–4 player gameplay
+- Each player can select their own token color before starting
 - Snakes and ladders are visually represented on the board
 - Dice roll button and player position display
-- Win detection
+- Players must roll the exact number to finish (no bounce-back)
+- Automatic ranking: see the order in which players finish
+- Win detection and final ranking popup
 
 ## Requirements
 - Python 3.x
@@ -26,6 +29,7 @@ All gameplay is handled through the GUI.
 
 ## Customization
 You can modify the snakes and ladders positions in the code (`snake_ladder_gui.py`) for different board setups.
+You can also change the default player colors or extend the game logic for more features.
 
 ## License
 This project is for educational purposes.
