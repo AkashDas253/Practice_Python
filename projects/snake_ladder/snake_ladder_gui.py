@@ -70,6 +70,8 @@ class SnakeLadderGUI:
         self.positions = [0] * player_count
         self.player_names = [f"Player {i+1}" for i in range(player_count)]
         self.turn = 0
+        self.finished = [False] * player_count
+        self.ranking = []  # List of (player_index, player_name)
         self.status = tk.Label(root, text=f"{self.player_names[self.turn]}'s turn")
         self.status.pack()
         self.roll_btn = tk.Button(root, text="Roll Dice", command=self.roll_dice)
@@ -117,7 +119,9 @@ class SnakeLadderGUI:
             self.canvas.create_line(*start_coords, *end_coords, fill=color, width=3, arrow=tk.LAST)
 
     def roll_dice(self):
-        if self.positions[self.turn] == 100:
+        # Skip finished players
+        if self.finished[self.turn]:
+            self.next_turn()
             return
         roll = random.randint(1, 6)
         self.dice_label.config(text=f"Dice: {roll}")
@@ -135,12 +139,31 @@ class SnakeLadderGUI:
         self.positions[self.turn] = pos
         self.player_labels[self.turn].config(text=f"{self.player_names[self.turn]} Position: {pos}")
         self.update_players()
-        if pos == 100:
-            self.status.config(text=f"{self.player_names[self.turn]} wins!")
-            self.roll_btn.config(state=tk.DISABLED)
-        else:
+        if pos == 100 and not self.finished[self.turn]:
+            self.finished[self.turn] = True
+            self.ranking.append(self.turn)
+            rank = len(self.ranking)
+            self.status.config(text=f"{self.player_names[self.turn]} finished! Rank: {rank}")
+            if all(self.finished):
+                self.show_ranking()
+                self.roll_btn.config(state=tk.DISABLED)
+                return
+        self.next_turn()
+
+    def next_turn(self):
+        # Find next unfinished player
+        for _ in range(self.player_count):
             self.turn = (self.turn + 1) % self.player_count
+            if not self.finished[self.turn]:
+                break
+        if not all(self.finished):
             self.status.config(text=f"{self.player_names[self.turn]}'s turn")
+
+    def show_ranking(self):
+        ranking_text = "\n".join([
+            f"{i+1}. {self.player_names[idx]}" for i, idx in enumerate(self.ranking)
+        ])
+        messagebox.showinfo("Game Over", f"Final Ranking:\n{ranking_text}")
 
     def update_players(self):
         for i in range(self.player_count):
