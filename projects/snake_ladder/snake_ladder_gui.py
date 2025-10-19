@@ -125,9 +125,12 @@ class SnakeLadderGUI:
             return
         roll = random.randint(1, 6)
         self.dice_label.config(text=f"Dice: {roll}")
-        pos = self.positions[self.turn] + roll
+        old_pos = self.positions[self.turn]
+        pos = old_pos + roll
         if pos > 100:
-            pos = 100 - (pos - 100)
+            self.status.config(text=f"{self.player_names[self.turn]} rolled {roll} but needs exact number to finish.")
+            self.next_turn()
+            return
         if pos in SNAKES:
             self.status.config(text=f"Oops! Bitten by a snake at {pos}. Go down to {SNAKES[pos]}")
             pos = SNAKES[pos]
