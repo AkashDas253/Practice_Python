@@ -2,7 +2,9 @@
 from algorithms.linear_search import linear_search
 from algorithms.binary_search import binary_search
 from algorithms.jump_search import jump_search
+
 from algorithms.exponential_search import exponential_search
+from algorithms.ternary_search import ternary_search
 
 test_cases = [
     ([1, 3, 5, 7, 9, 11], 7, 3),
@@ -17,7 +19,8 @@ def run_tests():
         ("Linear Search", linear_search, {}),
         ("Binary Search", binary_search, {"issorted": True}),
         ("Jump Search", jump_search, {"issorted": True}),
-        ("Exponential Search", exponential_search, {"issorted": True})
+        ("Exponential Search", exponential_search, {"issorted": True}),
+        ("Ternary Search", ternary_search, {"issorted": True})
     ]
     for name, func, base_kwargs in algos:
         print(f"{name}:")
