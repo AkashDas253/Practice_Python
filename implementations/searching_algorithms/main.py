@@ -25,17 +25,20 @@ def main():
     verbose = input("Show step-by-step working? (y/n): ").strip().lower() == 'y'
     print(f"Array: {arr}")
     idx = -1
+    issorted = True
+    if algo_choice in ['2', '3', '4']:
+        issorted = input("Is the array already sorted? (y/n): ").strip().lower() == 'y'
     if algo_choice == '1':
         idx = linear_search(arr, target, verbose)
         print(f"Linear Search: Index {idx}" if idx != -1 else "Linear Search: Not found")
     elif algo_choice == '2':
-        idx = binary_search(arr, target, verbose)
+        idx = binary_search(arr, target, verbose, issorted=issorted)
         print(f"Binary Search: Index {idx}" if idx != -1 else "Binary Search: Not found")
     elif algo_choice == '3':
-        idx = jump_search(arr, target, verbose)
+        idx = jump_search(arr, target, verbose, issorted=issorted)
         print(f"Jump Search: Index {idx}" if idx != -1 else "Jump Search: Not found")
     elif algo_choice == '4':
-        idx = exponential_search(arr, target, verbose)
+        idx = exponential_search(arr, target, verbose, issorted=issorted)
         print(f"Exponential Search: Index {idx}" if idx != -1 else "Exponential Search: Not found")
     else:
         print("Invalid choice.")

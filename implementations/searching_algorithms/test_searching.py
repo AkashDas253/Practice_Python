@@ -14,15 +14,19 @@ test_cases = [
 
 def run_tests():
     algos = [
-        ("Linear Search", linear_search),
-        ("Binary Search", binary_search),
-        ("Jump Search", jump_search),
-        ("Exponential Search", exponential_search)
+        ("Linear Search", linear_search, {}),
+        ("Binary Search", binary_search, {"issorted": True}),
+        ("Jump Search", jump_search, {"issorted": True}),
+        ("Exponential Search", exponential_search, {"issorted": True})
     ]
-    for name, func in algos:
+    for name, func, base_kwargs in algos:
         print(f"{name}:")
         for i, (arr, target, expected) in enumerate(test_cases):
-            result = func(arr, target, verbose=False)
+            # For the unsorted test case (index 2), set issorted=False
+            kwargs = dict(base_kwargs)
+            if i == 2 and name != "Linear Search":
+                kwargs["issorted"] = False
+            result = func(arr, target, verbose=False, **kwargs)
             print(f"  Test {i+1}: Array={arr}, Target={target}", end=" ")
             print("PASS" if result == expected else f"FAIL (got {result}, expected {expected})")
         print()
