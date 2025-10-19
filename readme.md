@@ -8,6 +8,7 @@
 - [Snake and Bait](projects/snake_and_bait/README.md)
 - [Calculator](projects/calculator/README.md)
 - [Tetris](projects/tetris/readme.md)
+- [Snake and Ladder](projects/snake_ladder/readme.md)
 
 ### Mini Projects
 - [Server](projects/server/README.md)
