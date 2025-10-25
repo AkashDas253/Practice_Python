@@ -10,7 +10,7 @@
 - [Tetris](projects/tetris/readme.md)
 - [Snake and Ladder](projects/snake_ladder/readme.md)
 - [2048 game](projects/the_2048_game/readme.md)
-
+- [Online Tic-Tac-Toe](./projects/online_tic_tac_toe/readme.md)
 
 ### Mini Projects
 - [Server](projects/server/README.md)
