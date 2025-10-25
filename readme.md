@@ -9,6 +9,8 @@
 - [Calculator](projects/calculator/README.md)
 - [Tetris](projects/tetris/readme.md)
 - [Snake and Ladder](projects/snake_ladder/readme.md)
+- [2048 game](projects/the_2048_game/readme.md)
+
 
 ### Mini Projects
 - [Server](projects/server/README.md)
