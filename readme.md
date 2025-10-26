@@ -10,7 +10,8 @@
 - [Tetris](projects/tetris/readme.md)
 - [Snake and Ladder](projects/snake_ladder/readme.md)
 - [2048 game](projects/the_2048_game/readme.md)
-- [Online Tic-Tac-Toe](./projects/online_tic_tac_toe/readme.md)
+- [Online Tic-Tac-Toe (Centralized Server)](./projects/online_tic_tac_toe_centralized/readme.md)
+- [Online Tic-Tac-Toe(Peer to Peer)](./projects/online_tic_tac_toe_peer_to_peer/readme.md)
 - [AI Powered Flashcard](./projects/ai_powered_flashcard/readme.md)
 
 ### Mini Projects
