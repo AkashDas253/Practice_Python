@@ -2,18 +2,26 @@
 
 A simple offline flashcard application with spaced repetition and basic AI features, built in Python. Supports CLI and can be extended with a GUI.
 
+
 ## Features
 - Add, review, and tag flashcards
 - Spaced repetition (intervals in hours)
 - AI-suggested flashcard (prioritizes cards you're likely to forget)
 - Fuzzy logic support (score field for adaptive review)
-- Easy to extend with a GUI (Tkinter, PySimpleGUI, etc.)
+- Simple GUI built with Tkinter
+
 
 ## How to Use
+### CLI
 1. Run `main.py` to start the app.
 2. Use the menu to add, review, or get AI-suggested flashcards.
 3. Flashcards are stored in `flashcards.json`.
 4. You can edit or import/export flashcards as needed.
+
+### GUI
+1. Run `gui.py` to launch the graphical interface.
+2. Use buttons to add, review, or get AI-suggested flashcards.
+3. All features from the CLI are available in the GUI.
 
 ## Project Structure
 ```
@@ -31,9 +39,10 @@ The app uses simple AI logic to suggest which flashcard you should review next:
 - The `score` field is updated: +1 for wrong, -1 for right. Cards with higher scores are prioritized for review.
 - This is a basic form of fuzzy logic, adapting to your learning pattern.
 
-## Extending with GUI
-- You can add a GUI using Tkinter or PySimpleGUI.
-- The core logic is in `flashcard_core.py` for easy integration.
+
+## GUI Details
+- The GUI is built with Tkinter and provides buttons for all main actions.
+- The core logic is in `flashcard_core.py` for easy integration and extension.
 
 ## Example Flashcard JSON
 ```json
@@ -51,6 +60,14 @@ The app uses simple AI logic to suggest which flashcard you should review next:
 
 ## Requirements
 - Python 3.x
+- Tkinter (usually included with Python standard library)
+
+## Installation & Usage
+1. Clone or download this repository.
+2. Install Python 3.x from https://www.python.org/ if not already installed.
+3. (Optional) Create a virtual environment: `python -m venv venv`
+4. Run `main.py` for CLI or `gui.py` for GUI.
+5. Flashcards are stored in `flashcards.json`.
 
 ## License
 MIT
