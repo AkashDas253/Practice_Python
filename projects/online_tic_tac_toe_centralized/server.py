@@ -1,10 +1,6 @@
-
-# Multi-room Tic Tac Toe Server
 import socket
 import threading
-
-HOST = '0.0.0.0'
-PORT = 65432
+import random
 
 class GameRoom:
     def __init__(self, room_name):
@@ -14,128 +10,182 @@ class GameRoom:
         self.current_player = 0
         self.symbols = ['X', 'O']
         self.lock = threading.Lock()
+        self.active = True
+        print(f"[GameRoom] Created room {room_name}")
 
-    def broadcast(self, message):
-        for client in self.clients:
+    def broadcast(self, msg):
+        print(f"[GameRoom {self.room_name}] Broadcasting: {msg}")
+        for c in self.clients:
             try:
-                client.sendall(message.encode())
-            except:
-                pass
-
-    def send_to_player(self, player_id, message):
-        try:
-            self.clients[player_id].sendall(message.encode())
-        except:
-            pass
-
-    def get_board_state(self):
-        return ''.join(self.board)
+                c.sendall((msg + '\n').encode())
+            except Exception as e:
+                print(f"[GameRoom {self.room_name}] Broadcast error: {e}")
 
     def check_winner(self):
-        wins = [
-            [0,1,2],[3,4,5],[6,7,8],
-            [0,3,6],[1,4,7],[2,5,8],
-            [0,4,8],[2,4,6]
-        ]
-        for a,b,c in wins:
-            if self.board[a] == self.board[b] == self.board[c] != ' ':
-                return self.board[a]
+        b = self.board
+        wins = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]
+        for i,j,k in wins:
+            if b[i] == b[j] == b[k] and b[i] != ' ':
+                return b[i]
+        if ' ' not in b:
+            return 'DRAW'
         return None
 
-    def run_game(self):
-        self.broadcast(self.get_board_state())
-        threads = []
-        for i, client in enumerate(self.clients):
-            t = threading.Thread(target=self.handle_client, args=(client, i), daemon=True)
-            t.start()
-            threads.append(t)
-        for t in threads:
-            t.join()
-
-    def handle_client(self, client, player_id):
-        while True:
-            try:
-                if self.current_player == player_id:
-                    self.send_to_player(player_id, "YOUR_TURN")
-                    data = client.recv(1024).decode()
-                    if not data:
-                        break
-                    move = int(data)
-                    with self.lock:
-                        if self.board[move] == ' ':
-                            self.board[move] = self.symbols[player_id]
-                            self.broadcast(self.get_board_state())
-                            winner = self.check_winner()
-                            if winner:
-                                self.broadcast(f"WINNER:{winner}")
-                                break
-                            elif ' ' not in self.board:
-                                self.broadcast("DRAW")
-                                break
-                            self.current_player = 1 - self.current_player
-                        else:
-                            client.sendall("INVALID".encode())
-                else:
-                    import time
-                    time.sleep(0.1)
-            except Exception as e:
-                break
+    def run_game(self, cleanup_callback=None):
+        print(f"[GameRoom {self.room_name}] Game starting with {len(self.clients)} clients.")
         try:
-            client.close()
-        except:
-            pass
-
-class TicTacToeServer:
-    def __init__(self, host=HOST, port=PORT):
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind((host, port))
-        self.server.listen(100)
-        print(f"[SERVER] Listening on {host}:{port}")
-        self.rooms = {}  # room_name -> GameRoom
-        self.lock = threading.Lock()
-
-    def client_handler(self, client, addr):
-        try:
-            client.sendall("ROOM_NAME?".encode())
-            room_name = client.recv(1024).decode().strip()
-            if not room_name:
-                client.sendall("Invalid room name.".encode())
-                client.close()
-                return
-            with self.lock:
-                if room_name not in self.rooms:
-                    self.rooms[room_name] = GameRoom(room_name)
-                room = self.rooms[room_name]
-                if len(room.clients) >= 2:
-                    client.sendall("Room full. Try another room.".encode())
-                    client.close()
-                    return
-                room.clients.append(client)
-                client.sendall(f"WELCOME:{len(room.clients)-1}".encode())
-            # Start game if two clients
-            if len(room.clients) == 2:
-                threading.Thread(target=room.run_game, daemon=True).start()
-            else:
-                client.sendall("Waiting for another player to join...".encode())
+            self.broadcast('OPPONENT_JOINED')
+            for idx, c in enumerate(self.clients):
+                print(f"[GameRoom {self.room_name}] Sending WELCOME to client {idx}")
+                c.sendall((f'WELCOME:{idx}\n').encode())
+            self.broadcast(''.join(self.board))
+            while self.active:
+                try:
+                    print(f"[GameRoom {self.room_name}] Player {self.current_player} turn.")
+                    self.clients[self.current_player].sendall('YOUR_TURN\n'.encode())
+                    self.clients[self.current_player].settimeout(120)
+                    move = self.clients[self.current_player].recv(1024).decode()
+                    print(f"[GameRoom {self.room_name}] Received move: {move}")
+                except Exception as e:
+                    print(f"[GameRoom {self.room_name}] Network error or timeout: {e}")
+                    self.active = False
+                    break
+                valid_move = False
+                try:
+                    move_int = int(move)
+                    if move_int in range(9) and self.board[move_int] == ' ':
+                        valid_move = True
+                except Exception as e:
+                    print(f"[GameRoom {self.room_name}] Invalid move data: {move} ({e})")
+                if not valid_move:
+                    try:
+                        self.clients[self.current_player].sendall('INVALID\n'.encode())
+                    except Exception as e:
+                        print(f"[GameRoom {self.room_name}] Error sending INVALID: {e}")
+                    continue
+                with self.lock:
+                    self.board[move_int] = self.symbols[self.current_player]
+                print(f"[GameRoom {self.room_name}] Board updated: {self.board}")
+                self.broadcast(''.join(self.board))
+                winner = self.check_winner()
+                if winner:
+                    print(f"[GameRoom {self.room_name}] Game ended. Winner: {winner}")
+                    if winner == 'DRAW':
+                        self.broadcast('DRAW')
+                    else:
+                        self.broadcast(f'WINNER:{winner}')
+                    self.active = False
+                    break
+                self.current_player = 1 - self.current_player
         except Exception as e:
-            try:
-                client.close()
-            except:
-                pass
-
-    def run(self):
-        try:
-            while True:
-                client, addr = self.server.accept()
-                print(f"[SERVER] Client {addr} connected.")
-                threading.Thread(target=self.client_handler, args=(client, addr), daemon=True).start()
-        except KeyboardInterrupt:
-            print("\n[SERVER] Server stopped by user.")
+            print(f"[GameRoom {self.room_name}] Game error: {e}")
         finally:
-            self.server.close()
+            for c in self.clients:
+                try:
+                    c.close()
+                except Exception as e:
+                    print(f"[GameRoom {self.room_name}] Error closing client: {e}")
+            if cleanup_callback:
+                cleanup_callback(self.room_name)
 
-if __name__ == "__main__":
-    try:
-        TicTacToeServer().run()
-    except KeyboardInterrupt:
-        print("\nServer stopped by user.")
+class Server:
+    def __init__(self, host='0.0.0.0', port=65432):
+        self.host = host
+        self.port = port
+        self.rooms = {}
+        self.lock = threading.Lock()
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock.bind((self.host, self.port))
+        self.sock.listen(100)
+        print(f'[Server] Listening on {self.host}:{self.port}')
+
+    def cleanup_room(self, room_name):
+        with self.lock:
+            if room_name in self.rooms:
+                del self.rooms[room_name]
+                print(f"[Server] Room {room_name} cleaned up.")
+
+    def client_handler(self, conn, addr):
+        print(f"[Server] New connection from {addr}")
+        try:
+            conn.settimeout(60)
+            conn.sendall('Do you want to start a new game or join? (new/join)\n'.encode())
+            mode = conn.recv(1024).decode().strip()
+            print(f"[Server] Client {addr} selected mode: {mode}")
+            if mode == 'new':
+                room_name = str(random.randint(1000,9999))
+                with self.lock:
+                    self.rooms[room_name] = GameRoom(room_name)
+                conn.sendall((f'Your new room number is: {room_name}\n').encode())
+                self.rooms[room_name].clients.append(conn)
+                print(f"[Server] Client {addr} created room {room_name}")
+                # Wait for second player with timeout
+                wait_time = 0
+                while len(self.rooms[room_name].clients) < 2 and wait_time < 120:
+                    threading.Event().wait(1)
+                    wait_time += 1
+                if len(self.rooms[room_name].clients) < 2:
+                    try:
+                        conn.sendall('Timeout waiting for opponent.'.encode())
+                    except Exception as e:
+                        print(f"[Server] Error sending timeout: {e}")
+                    with self.lock:
+                        del self.rooms[room_name]
+                    print(f"[Server] Room {room_name} deleted due to timeout.")
+                    conn.close()
+                    return
+                print(f"[Server] Room {room_name} starting game.")
+                threading.Thread(target=self.rooms[room_name].run_game, args=(self.cleanup_room,), daemon=True).start()
+            elif mode == 'join':
+                conn.sendall('Enter room number:\n'.encode())
+                room_name = conn.recv(1024).decode().strip()
+                print(f"[Server] Client {addr} joining room {room_name}")
+                with self.lock:
+                    room = self.rooms.get(room_name)
+                if not room or len(room.clients) >= 2:
+                    try:
+                        conn.sendall('Room full. Try another room.\n'.encode())
+                    except Exception as e:
+                        print(f"[Server] Error sending room full: {e}")
+                    conn.close()
+                    return
+                room.clients.append(conn)
+                print(f"[Server] Client {addr} joined room {room_name}")
+                # Wait for second player with timeout
+                wait_time = 0
+                while len(room.clients) < 2 and wait_time < 120:
+                    threading.Event().wait(1)
+                    wait_time += 1
+                if len(room.clients) < 2:
+                    try:
+                        conn.sendall('Timeout waiting for opponent.\n'.encode())
+                    except Exception as e:
+                        print(f"[Server] Error sending timeout: {e}")
+                    with self.lock:
+                        del self.rooms[room_name]
+                    print(f"[Server] Room {room_name} deleted due to timeout.")
+                    conn.close()
+                    return
+                print(f"[Server] Room {room_name} starting game.")
+                threading.Thread(target=room.run_game, args=(self.cleanup_room,), daemon=True).start()
+            else:
+                try:
+                    conn.sendall('Invalid option.\n'.encode())
+                except Exception as e:
+                    print(f"[Server] Error sending invalid option: {e}")
+                conn.close()
+        except Exception as e:
+            print(f"[Server] Client handler error: {e}")
+            try:
+                conn.close()
+            except Exception as e:
+                print(f"[Server] Error closing connection: {e}")
+
+    def start(self):
+        while True:
+            conn, addr = self.sock.accept()
+            threading.Thread(target=self.client_handler, args=(conn, addr), daemon=True).start()
+
+if __name__ == '__main__':
+    Server().start()
