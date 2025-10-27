@@ -17,11 +17,20 @@ Open a terminal and run:
 python server.py
 ```
 
+
 ### 2. Start Clients
-Open two terminals (or run on two machines) and run:
-```
-python client_gui.py
-```
+You can use either the GUI or CLI client, or mix both:
+
+- For GUI client:
+	```
+	python client_gui.py
+	```
+- For CLI client:
+	```
+	python client_cli.py
+	```
+
+You can play with one player using the GUI and another using the CLI, or both using the same type.
 
 ### 3. Play
 - Enter server IP and port (default: 127.0.0.1:65432).
@@ -29,9 +38,11 @@ python client_gui.py
 - Play Tic Tac Toe with real-time board updates.
 - Game ends with win/draw notification.
 
+
 ## File Structure
 - `server.py` — Centralized game server.
 - `client_gui.py` — Tkinter GUI client.
+- `client_cli.py` — Command-line client.
 - `readme.md` — This documentation.
 
 ## Requirements
