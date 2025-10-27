@@ -118,8 +118,11 @@ class TicTacToeClientGUI:
                 break
             # Split multiple messages if received together
             messages = data.split('\n')
+            # Track if board was updated in this batch
+            board_updated = False
             for msg in messages:
-                msg = msg.strip()
+                # Only strip newlines, not spaces
+                msg = msg.replace('\n', '')
                 if not msg:
                     continue
                 print(f"[Client] Handling message: {repr(msg)}")
@@ -136,16 +139,21 @@ class TicTacToeClientGUI:
                             board_created = True
                     except Exception as e:
                         print(f"[Client] Error parsing WELCOME: {e}")
-                elif len(msg) == 9 and set(msg).issubset({'X','O',' '}):
+                elif len(msg) == 9 and set(msg) <= {'X','O',' '}:
                     self.board = list(msg)
                     self.status_label.config(text=f'Room: {self.room_name} | You are {self.symbol} | Game started!')
                     self.update_board()
+                    board_updated = True
                 elif msg.startswith('WINNER'):
+                    if not board_updated:
+                        self.update_board()
                     winner = msg.split(':')[1]
                     self.status_label.config(text=f'Game Over! Winner: {winner}')
                     messagebox.showinfo('Game Over', f'Winner: {winner}')
                     return
                 elif msg == 'DRAW':
+                    if not board_updated:
+                        self.update_board()
                     self.status_label.config(text="Game Over! It's a draw.")
                     messagebox.showinfo('Game Over', "It's a draw.")
                     return

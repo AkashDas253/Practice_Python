@@ -1,32 +1,51 @@
-# Online Tic-Tac-Toe
+# Online Tic Tac Toe (Centralized)
 
-This project implements an online Tic-Tac-Toe game in Python using sockets.
+A multi-room, multi-client Tic Tac Toe game using Python sockets and Tkinter GUI.
+
+## Features
+- Centralized server supports multiple game rooms.
+- Each room allows two players to play Tic Tac Toe.
+- Tkinter GUI client for easy play.
+- Real-time board updates and game status.
+- Handles disconnects, timeouts, and invalid moves.
 
 ## How to Run
 
-### Server
-1. Open a terminal and run:
-   ```powershell
-   python server.py
-   ```
-2. Wait for two clients to connect.
+### 1. Start the Server
+Open a terminal and run:
+```
+python server.py
+```
 
-### Client
-1. On two separate machines or terminals, run:
-   ```powershell
-   python client.py
-   ```
-2. Enter your moves when prompted (positions 0-8).
+### 2. Start Clients
+Open two terminals (or run on two machines) and run:
+```
+python client_gui.py
+```
+
+### 3. Play
+- Enter server IP and port (default: 127.0.0.1:65432).
+- Choose to create a new room or join an existing room.
+- Play Tic Tac Toe with real-time board updates.
+- Game ends with win/draw notification.
+
+## File Structure
+- `server.py` — Centralized game server.
+- `client_gui.py` — Tkinter GUI client.
+- `readme.md` — This documentation.
+
+## Requirements
+- Python 3.x
+- Tkinter (usually included with Python)
 
 ## Notes
-- The server must be started before clients connect.
-- Change `HOST` in `client.py` to the server's IP address if running on different machines.
-- The board positions are numbered 0-8 as follows:
+- Both server and clients must be on the same network or have network access.
+- For remote play, use the server's public IP and ensure firewall allows the port.
 
-```
-0 | 1 | 2
----------
-3 | 4 | 5
----------
-6 | 7 | 8
-```
+## Troubleshooting
+- If the game does not start, check server and client logs for errors.
+- Make sure both clients connect to the same room number.
+- If you see connection errors, check your network/firewall settings.
+
+## License
+MIT
