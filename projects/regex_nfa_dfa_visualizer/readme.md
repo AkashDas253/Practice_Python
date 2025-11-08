@@ -5,7 +5,7 @@ A Python tool to convert regular expressions into finite automata and visualize 
 ## Features
 - **Regex to NFA:** Build an NFA from a regular expression using Thompson’s construction.
 - **NFA to DFA:** Convert the NFA to a DFA using subset construction (with trap state for completeness).
-- **Visualization:** Print readable automata transitions; extendable to graphical visualization with `graphviz` or `networkx`.
+- **Visualization:** Print readable automata transitions; graphical visualization using `networkx` and `matplotlib` (no external binaries required).
 - **Step-by-step Animation:** (Planned) Animate transitions for educational clarity.
 - **Interactive Mode:** (Planned) Visual playground for automata.
 
@@ -13,7 +13,8 @@ A Python tool to convert regular expressions into finite automata and visualize 
 
 ### Prerequisites
 - Python 3.7+
-- (Optional) `graphviz` or `networkx` for graphical visualization
+- `networkx>=3.0`
+- `matplotlib>=3.7`
 
 ### Installation
 Clone the repository:
@@ -24,9 +25,9 @@ Navigate to the project folder:
 ```sh
 cd Practice_Python/projects/regex_nfa_dfa_visualizer
 ```
-Install dependencies (if using visualization extras):
+Install dependencies:
 ```sh
-pip install graphviz networkx
+pip install -r requirements.txt
 ```
 
 ### Usage
@@ -34,7 +35,7 @@ Run the main script:
 ```sh
 python main.py
 ```
-Follow the prompts to enter a regex and view the NFA/DFA transitions.
+Follow the prompts to enter a regex and view the NFA/DFA transitions and visualizations.
 
 ## Project Structure
 ```
@@ -42,8 +43,9 @@ core/
     nfa.py            # NFA construction and logic
     dfa.py            # DFA construction and logic
     regex_parser.py   # Regex parsing utilities
-    visualizer.py     # Text-based automata visualization
+    visualizer.py     # Automata visualization (networkx/matplotlib)
 main.py               # Entry point for CLI usage
+requirements.txt      # Python dependencies
 ```
 
 ## Code Overview
@@ -61,6 +63,7 @@ main.py               # Entry point for CLI usage
 - Ensures all transitions are present (trap state)
 
 ### AutomataVisualizer (`core/visualizer.py`)
+- Visualizes automata using networkx and matplotlib
 - Prints automata states and transitions in readable format
 
 ## Contributing
@@ -68,3 +71,6 @@ Pull requests and suggestions are welcome! For major changes, please open an iss
 
 ## License
 MIT License
+
+## Author
+Akash Das
