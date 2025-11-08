@@ -5,6 +5,7 @@ from core.visualizer import AutomataVisualizer
 if __name__ == "__main__":
 	
 	pattern = input("Enter regex: ")
+	input_str = input("Enter input string to test (leave blank for static visualization): ")
 	visualizer = AutomataVisualizer()
 	
 	# Construct NFA from regex
@@ -13,7 +14,7 @@ if __name__ == "__main__":
 	nfa.print_definition()
 	print("Visualizing NFA...")
 	nfa_dict = nfa.to_dict()
-	visualizer.visualize(nfa_dict)
+	visualizer.visualize(nfa_dict, automata_type='nfa', input_string=input_str if input_str else None, filename='nfa', view=True)
 	
 	input("Press Enter to continue to DFA...")
 	# Construct DFA from NFA
@@ -21,6 +22,6 @@ if __name__ == "__main__":
 	print("DFA constructed.")
 	dfa.print_definition()
 	print("Visualizing DFA...")
-	visualizer.visualize(dfa.to_dict())
+	dfa_dict = dfa.to_dict()
+	visualizer.visualize(dfa_dict, automata_type='dfa', input_string=input_str if input_str else None, filename='dfa', view=True)
 
-    

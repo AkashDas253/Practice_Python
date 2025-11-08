@@ -65,9 +65,13 @@ class DFA:
             curr_name = dfa_states[curr]
             dfa_trans[curr_name] = {}
             for symbol in inputs:
-                next_states = frozenset(epsilon_closure(move(curr, symbol)))
+                # Move: collect all possible next states for this symbol from all states in curr
+                move_states = set()
+                for s in curr:
+                    move_states.update(nfa_trans.get(s, {}).get(symbol, []))
+                # Apply epsilon closure to the union of all move states
+                next_states = frozenset(epsilon_closure(move_states))
                 if not next_states:
-                    # Transition to trap state for missing transitions
                     dfa_trans[curr_name][symbol] = "TRAP"
                     continue
                 if next_states not in dfa_states:

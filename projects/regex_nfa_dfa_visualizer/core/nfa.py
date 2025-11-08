@@ -45,12 +45,19 @@ class NFA:
 		return ''.join(output)
 
 	def _add_concat(self, pattern):
+		# Improved: handle consecutive stars and parentheses correctly
 		result = ''
 		for i, c in enumerate(pattern):
 			result += c
 			if i+1 < len(pattern):
 				d = pattern[i+1]
-				if (c.isalnum() or c == ')' or c == '*') and (d.isalnum() or d == '('):
+				# Insert '.' for explicit concatenation
+				if (
+					(c.isalnum() or c == ')' or c == '*') and
+					(d.isalnum() or d == '(')
+				) or (
+					c == '*' and (d == '(' or d.isalnum())
+				):
 					result += '.'
 		return result
 
