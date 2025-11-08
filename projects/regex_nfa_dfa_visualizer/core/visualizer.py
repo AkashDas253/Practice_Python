@@ -90,7 +90,7 @@ class AutomataVisualizer:
         accepted = traversal['accepted']
         stopped_early = traversal['stopped_early']
         frame_idx = [0]
-        is_dfa = all(isinstance(s, str) for s in steps[0]) if steps and isinstance(steps[0], set) else True
+        is_dfa = isinstance(steps[0], str)
         def update(frame):
             ax.clear()
             # Debug print for NFA step states
