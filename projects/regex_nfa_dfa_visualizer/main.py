@@ -14,7 +14,11 @@ if __name__ == "__main__":
 	nfa.print_definition()
 	print("Visualizing NFA...")
 	nfa_dict = nfa.to_dict()
-	visualizer.visualize(nfa_dict, automata_type='nfa', input_string=input_str if input_str else None, filename='nfa', view=True)
+	if input_str:
+		nfa_traversal = nfa.traverse(input_str)  # returns dict with steps and accepted
+		visualizer.visualize(nfa_dict, automata_type='nfa', input_string=input_str, traversal=nfa_traversal, filename='nfa', view=True)
+	else:
+		visualizer.visualize(nfa_dict, automata_type='nfa', input_string=None, filename='nfa', view=True)
 	
 	input("Press Enter to continue to DFA...")
 	# Construct DFA from NFA
@@ -23,5 +27,9 @@ if __name__ == "__main__":
 	dfa.print_definition()
 	print("Visualizing DFA...")
 	dfa_dict = dfa.to_dict()
-	visualizer.visualize(dfa_dict, automata_type='dfa', input_string=input_str if input_str else None, filename='dfa', view=True)
+	if input_str:
+		dfa_traversal = dfa.traverse(input_str)  # returns dict with steps and accepted
+		visualizer.visualize(dfa_dict, automata_type='dfa', input_string=input_str, traversal=dfa_traversal, filename='dfa', view=True)
+	else:
+		visualizer.visualize(dfa_dict, automata_type='dfa', input_string=None, filename='dfa', view=True)
 

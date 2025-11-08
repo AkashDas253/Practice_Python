@@ -110,3 +110,23 @@ class DFA:
             "inputs": list(self.inputs),
             "transitions": self.transitions
         }
+
+    def traverse(self, input_string):
+        """
+        Traverse the DFA for the given input string.
+        Returns a dict: { 'steps': [state name per step], 'accepted': bool, 'stopped_early': bool }
+        """
+        dfa_dict = self.to_dict()
+        transitions = dfa_dict["transitions"]
+        current_state = dfa_dict["start_state"]
+        steps = [current_state]
+        stopped_early = False
+        for symbol in input_string:
+            next_state = transitions.get(current_state, {}).get(symbol)
+            if next_state is None or next_state == "TRAP":
+                stopped_early = True
+                break
+            steps.append(next_state)
+            current_state = next_state
+        accepted = current_state in dfa_dict["accept_states"] and not stopped_early and len(steps) == len(input_string)+1
+        return { 'steps': steps, 'accepted': accepted, 'stopped_early': stopped_early }

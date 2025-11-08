@@ -83,11 +83,14 @@ class NFA:
 				stack.append(self.Fragment(s, accepts))
 			elif c == '*':
 				frag = stack.pop()
-				s = self.State()
+				s_start = self.State()
+				s_accept = self.State()
+				# New start state epsilon to frag.start and accept
+				s_start.epsilon.extend([frag.start, s_accept])
+				# All accepts epsilon to frag.start and accept
 				for a in frag.accepts:
-					a.epsilon.append(frag.start)
-				s.epsilon.append(frag.start)
-				stack.append(self.Fragment(s, [s]))
+					a.epsilon.extend([frag.start, s_accept])
+				stack.append(self.Fragment(s_start, [s_accept]))
 		return stack.pop()
 
 	def _collect_states(self, start):
@@ -136,3 +139,38 @@ class NFA:
 		for state, trans in nfa_dict['transitions'].items():
 			for symbol, targets in trans.items():
 				print(f"{state:<6} | {symbol:<6} | {targets}")
+
+	def traverse(self, input_string):
+		"""
+		Traverse the NFA for the given input string.
+		Returns a dict: { 'steps': [set of state names per step], 'accepted': bool, 'stopped_early': bool }
+		"""
+		nfa_dict = self.to_dict()
+		transitions = nfa_dict["transitions"]
+		def epsilon_closure(states):
+			closure = set(states)
+			stack = list(states)
+			while stack:
+				state = stack.pop()
+				for t in transitions.get(state, {}).get('ε', []):
+					if t not in closure:
+						closure.add(t)
+						stack.append(t)
+			return closure
+		current_states = epsilon_closure([nfa_dict["start_state"]])
+		steps = [set(current_states)]
+		stopped_early = False
+		for symbol in input_string:
+			# Move on symbol: collect all possible next states from all current states
+			next_states = set()
+			for state in current_states:
+				for t in transitions.get(state, {}).get(symbol, []):
+					next_states.add(t)
+			# Apply epsilon closure to the union of all next states
+			current_states = epsilon_closure(next_states)
+			if not current_states:
+				stopped_early = True
+				break
+			steps.append(set(current_states))
+		accepted = any(s in nfa_dict["accept_states"] for s in current_states) and not stopped_early
+		return { 'steps': steps, 'accepted': accepted, 'stopped_early': stopped_early }
