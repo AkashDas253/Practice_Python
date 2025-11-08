@@ -95,20 +95,42 @@ class AutomataVisualizer:
             ax.clear()
             # Debug print for NFA step states
             print(f"NFA step {frame}: {steps[frame]}")
+            start_state = automata_dict.get("start_state")
+            accept_states = set(automata_dict.get("accept_states", []))
             if is_dfa:
-                node_colors = ['yellow' if n == steps[frame] else ('lightgreen' if n in automata_dict.get("accept_states", []) else 'lightblue') for n in G.nodes()]
+                current_state = steps[frame]
+                node_colors = []
+                for n in G.nodes():
+                    if n == start_state:
+                        node_colors.append('deepskyblue')  # Initial state
+                    elif n == current_state:
+                        node_colors.append('orange')  # Current state
+                    elif n in accept_states:
+                        node_colors.append('limegreen')  # Final state
+                    else:
+                        node_colors.append('lightgray')
             else:
                 step_states = set(str(s) for s in steps[frame])
-                # Always highlight at least one state yellow, even if empty
-                if not step_states:
-                    # If stopped early, highlight all nodes red
-                    node_colors = ['red' for n in G.nodes()]
-                else:
-                    node_colors = ['yellow' if n in step_states else ('lightgreen' if n in automata_dict.get("accept_states", []) else 'lightblue') for n in G.nodes()]
-            nx.draw(G, pos, with_labels=True, node_color=node_colors, node_size=1200, font_size=10, arrows=True, ax=ax)
+                node_colors = []
+                for n in G.nodes():
+                    if n == start_state:
+                        node_colors.append('deepskyblue')
+                    elif n in step_states:
+                        node_colors.append('orange')
+                    elif n in accept_states:
+                        node_colors.append('limegreen')
+                    else:
+                        node_colors.append('lightgray')
+            nx.draw(G, pos, with_labels=True, node_color=node_colors, node_size=1200, font_size=10, ax=ax)
             nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color='red', ax=ax)
-            ax.annotate('', xy=pos[automata_dict.get("start_state")], xytext=(pos[automata_dict.get("start_state")][0]-0.15, pos[automata_dict.get("start_state")][1]),
-                        arrowprops=dict(facecolor='black', shrink=0.05, width=2, headwidth=8))
+            # Add legend for colors
+            import matplotlib.patches as mpatches
+            legend_patches = [
+                mpatches.Patch(color='deepskyblue', label='Initial State'),
+                mpatches.Patch(color='limegreen', label='Final State'),
+                mpatches.Patch(color='orange', label='Current State'),
+            ]
+            ax.legend(handles=legend_patches, loc='lower center', bbox_to_anchor=(0.5, -0.08), ncol=3, fontsize=12, frameon=False)
             processed = input_string[:frame] if frame > 0 else ''
             remaining = input_string[frame:] if frame < len(input_string) else ''
             if frame == len(steps)-1:

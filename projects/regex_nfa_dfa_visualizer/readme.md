@@ -1,3 +1,4 @@
+
 # Regex → NFA → DFA Converter + Visualizer
 
 A Python tool to convert regular expressions into finite automata and visualize their transitions. Useful for learning, teaching, and experimenting with automata theory.
@@ -5,8 +6,12 @@ A Python tool to convert regular expressions into finite automata and visualize 
 ## Features
 - **Regex to NFA:** Build an NFA from a regular expression using Thompson’s construction.
 - **NFA to DFA:** Convert the NFA to a DFA using subset construction (with trap state for completeness).
-- **Visualization:** Print readable automata transitions; graphical visualization using `networkx` and `matplotlib` (no external binaries required).
-- **Step-by-step Animation:** (Planned) Animate transitions for educational clarity.
+- **Visualization:**
+    - Print readable automata transitions
+    - Graphical visualization using `networkx` and `matplotlib` (no external binaries required)
+    - Color-coded states: Initial (deepskyblue), Final (limegreen), Current (orange)
+    - Legend displayed at the bottom for clarity
+    - Step-by-step animation of automata traversal
 - **Interactive Mode:** (Planned) Visual playground for automata.
 
 ## Getting Started
@@ -30,12 +35,21 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+
 ### Usage
 Run the main script:
 ```sh
 python main.py
 ```
 Follow the prompts to enter a regex and view the NFA/DFA transitions and visualizations.
+
+#### Visualization Details
+- The automata graph highlights:
+    - Initial state in deepskyblue
+    - Final (accept) states in limegreen
+    - Current state(s) in orange during traversal
+- A legend is shown at the bottom of the plot for reference
+- Step-by-step traversal info is displayed above the graph
 
 ## Project Structure
 ```
@@ -62,9 +76,11 @@ requirements.txt      # Python dependencies
 - Converts NFA to DFA (subset construction)
 - Ensures all transitions are present (trap state)
 
+
 ### AutomataVisualizer (`core/visualizer.py`)
 - Visualizes automata using networkx and matplotlib
 - Prints automata states and transitions in readable format
+- Animates traversal with color-coded states and a legend
 
 ## Contributing
 Pull requests and suggestions are welcome! For major changes, please open an issue first to discuss what you would like to change.
