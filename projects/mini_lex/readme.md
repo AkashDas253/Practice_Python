@@ -4,31 +4,39 @@
 **Concepts:** Tokens, patterns, lexemes, finite automata.
 
 ### Features
-- Define token types: keywords, identifiers, numbers, operators, punctuation, strings, chars, comments, whitespace
+## Lexical Analyzer (Mini Lex)
+
+**Goal:** Tokenize source code using regex & automata, with fully configurable tokens and colors.
+
+### Features
+- Define token types, keywords, and colors in `mini_lex_config.ini`
 - Output: token stream with type, value, and line number
 - Highlight invalid tokens (colored output)
-- Real-time token coloring in terminal
+- Real-time token coloring in terminal (colors set in config)
 - Handles comments and whitespace
 
 ### Usage
 1. Place your source code in a file (e.g., `test.c`).
 2. Run:
+    ```
+    python mini_lex.py test.c
+    ```
+3. See colored token output in terminal.
+
+### Configuration
+- **Keywords:** List in `[KEYWORDS]` section of `mini_lex_config.ini`
+- **Token Patterns:** Define regex for each token type in `[TOKENS]`
+- **Colors:** Assign colors to token types in `[COLORS]` (see colorama docs for options)
+
+### Testing
+- Test with a correct file:
    ```
    python mini_lex.py test.c
    ```
-3. See colored token output in terminal.
-
-### Supported Tokens
-- Keywords (e.g., `if`, `else`, `int`, ...)
-- Identifiers
-- Numbers (integers, floats)
-- Operators (`+`, `-`, `*`, `/`, `=`, `==`, `!=`, etc.)
-- Punctuation (`(`, `)`, `{`, `}`, `;`, `,`)
-- Strings (e.g., "hello world")
-- Character literals (e.g., 'a')
-- Comments (`// ...`, `/* ... */`)
-- Whitespace
-
+- Test with an error file:
+   ```
+   python mini_lex.py test_error.c
+   ```
 
 ### Requirements
 - Python 3.x
@@ -39,19 +47,11 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-### Sample Output
-```
-Line  Type       Value               
-----------------------------------------
-1     KEYWORD    int                 
-1     ID         main                
-1     PUNCT      (                   
-1     PUNCT      )                   
-1     PUNCT      {                   
-...   ...        ...                 
-```
-
 ### Extensibility
-- Add more token types (e.g., preprocessor directives)
-- Integrate with `ply.lex` for advanced lexing
+- Add or change token types, keywords, and colors in the config file
+- Supports any language by editing config
+
+---
+
+Created by AkashDas253
 - Improve error reporting
