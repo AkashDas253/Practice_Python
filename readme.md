@@ -5,7 +5,7 @@
 - [Sorting Algorithms](implementations/sorting_algorithms/README.md) (Algorithms)
 
 ### Practice Projects
-- [Snake and Bait](projects/snake_and_bait/README.md) (GUI game)
+- [Snake and Bait](projects/snake_and_bait/README.md) (GUI Game)
 - [Calculator](projects/calculator/README.md) (GUI Application)
 - [Tetris](projects/tetris/readme.md) (GUI Game)
 - [Snake and Ladder](projects/snake_ladder/readme.md) (GUI Game)
@@ -13,6 +13,10 @@
 - [Online Tic-Tac-Toe (Centralized Server)](./projects/online_tic_tac_toe_centralized/readme.md) (GUI and Networked Game)
 - [Online Tic-Tac-Toe(Peer to Peer)](./projects/online_tic_tac_toe_peer_to_peer/readme.md) (GUI and Networked Game)
 - [AI Powered Flashcard](./projects/ai_powered_flashcard/readme.md) (GUI and Trad AI Application)
+- [Regex to Finite Automata Visualizer](./projects/regex_nfa_dfa_visualizer/readme.md) (ToC GUI Visualizer)
+- [Turing Machine Simulator](./projects/turing_machine_simulator/readme.md) (ToC Concept)
+- [Logic Expression Evaluator](./projects/logic_expression_evaluator/readme.md) (CD Concept)
+- [Lexical Analyzer (Mini Lex)](./projects/mini_lex/readme.md) (CD Concept)
 
 ### Mini Projects
 - [Server](projects/server/README.md)
