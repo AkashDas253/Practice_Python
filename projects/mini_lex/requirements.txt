@@ -1,0 +1,2 @@
+# requirements.txt for Mini Lex
+colorama==0.4.6
