@@ -21,14 +21,7 @@ class LogicExpression:
         return [t for t in tokens if t.strip()]
 
     def parse(self, tokens):
-        """Build AST from tokens using recursive descent parsing."""
-        # Grammar:
-        # expr ::= or_expr
-        # or_expr ::= and_expr ('or' and_expr)*
-        # and_expr ::= not_expr ('and' not_expr)*
-        # not_expr ::= 'not' not_expr | atom
-        # atom ::= VAR | '(' expr ')'
-
+        """Build AST from tokens using recursive descent parsing with better error handling."""
         self._tokens = tokens
         self._pos = 0
 
@@ -47,6 +40,8 @@ class LogicExpression:
             left = parse_and()
             while peek() == 'or':
                 op = consume()
+                if peek() is None:
+                    raise SyntaxError("Expression cannot end with 'or'")
                 right = parse_and()
                 left = (op, left, right)
             return left
@@ -55,6 +50,8 @@ class LogicExpression:
             left = parse_not()
             while peek() == 'and':
                 op = consume()
+                if peek() is None:
+                    raise SyntaxError("Expression cannot end with 'and'")
                 right = parse_not()
                 left = (op, left, right)
             return left
@@ -62,6 +59,8 @@ class LogicExpression:
         def parse_not():
             if peek() == 'not':
                 op = consume()
+                if peek() is None:
+                    raise SyntaxError("'not' must be followed by an expression")
                 operand = parse_not()
                 return (op, operand)
             else:
@@ -77,6 +76,8 @@ class LogicExpression:
                 else:
                     raise SyntaxError('Expected closing parenthesis')
                 return node
+            elif tok is None:
+                raise SyntaxError('Unexpected end of expression')
             elif re.match(r'^[A-Za-z][A-Za-z0-9_]*$', tok):
                 return consume()
             else:
