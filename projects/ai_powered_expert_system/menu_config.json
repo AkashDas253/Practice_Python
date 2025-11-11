@@ -1,0 +1,32 @@
+{
+  "dishes": [
+    {
+      "name": "Paneer Butter Masala",
+      "ingredients": ["paneer", "tomato", "butter", "cream"],
+      "taste": ["spicy", "creamy"],
+      "type": "curry",
+      "region": "Indian"
+    },
+    {
+      "name": "Kung Pao Chicken",
+      "ingredients": ["chicken", "peanuts", "chili", "soy sauce"],
+      "taste": ["spicy", "savory"],
+      "type": "curry",
+      "region": "Chinese"
+    },
+    {
+      "name": "Tiramisu",
+      "ingredients": ["mascarpone", "coffee", "cocoa", "ladyfingers"],
+      "taste": ["sweet", "creamy"],
+      "type": "dessert",
+      "region": "Italian"
+    },
+    {
+      "name": "Samosa",
+      "ingredients": ["potato", "peas", "flour", "spices"],
+      "taste": ["spicy", "savory"],
+      "type": "snack",
+      "region": "Indian"
+    }
+  ]
+}
