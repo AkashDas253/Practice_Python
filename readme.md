@@ -19,6 +19,7 @@
 - [Turing Machine Simulator](./projects/turing_machine_simulator/readme.md) (ToC Concept Simulator)
 - [Logic Expression Evaluator](./projects/logic_expression_evaluator/readme.md) (CD Concept based Application)
 - [Lexical Analyzer (Mini Lex)](./projects/mini_lex/readme.md) (CD Concept based Application)
+- [Filesystem in a File](./projects/filesystem_in_a_file/readme.md) (File System Simulator inside a file)
 
 
 <!-- 
