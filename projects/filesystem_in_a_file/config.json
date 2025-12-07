@@ -1,0 +1,7 @@
+{
+    "BLOCK_SIZE": 512,
+    "NUM_BLOCKS": 50,
+    "DEFRAG_THRESHOLD": 0.50,
+    "POINTER_SIZE": 4,
+    "MAX_BLOCK_MAP_POINTERS": 1
+}
