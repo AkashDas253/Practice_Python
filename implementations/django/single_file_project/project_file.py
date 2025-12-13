@@ -1,4 +1,5 @@
 import sys
+import django
 from django.conf import settings
 from django.urls import path
 from django.http import HttpResponse
@@ -7,94 +8,128 @@ from django.middleware.csrf import get_token
 from django.forms import Form, CharField, EmailField
 from django.core.wsgi import get_wsgi_application
 from django.core.management import execute_from_command_line
+from django.db import models, connection
+from django.apps import AppConfig
 
-# --- 1. SETTINGS ---
+# --- 1. SETTINGS & APP CONFIG ---
+class SimpleAppConfig(AppConfig):
+    name = '__main__'  # Tells Django this script is the "App"
+    verbose_name = "Main App"
+    default_auto_field = 'django.db.models.BigAutoField'
+
 if not settings.configured:
     settings.configure(
-        SECRET_KEY='project-secret-key',
+        SECRET_KEY='django-insecure-single-file',
         ROOT_URLCONF=__name__,
         DEBUG=True,
         ALLOWED_HOSTS=['*'],
-        # REQUIRED: Defines the engine for rendering templates
+        DATABASES={
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': './mydatabase.sqlite3',
+            }
+        },
         TEMPLATES=[{
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
             'DIRS': [],
             'APP_DIRS': True,
         }],
-        # REQUIRED: Middleware for sessions and CSRF protection
         MIDDLEWARE=[
-            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.middleware.common.CommonMiddleware',
             'django.middleware.csrf.CsrfViewMiddleware',
+            'django.contrib.sessions.middleware.SessionMiddleware',
         ],
         INSTALLED_APPS=[
             'django.contrib.contenttypes',
-            'django.contrib.sessions', 
+            'django.contrib.sessions',
+            'django.contrib.auth',
+            '__main__.SimpleAppConfig',
         ],
     )
+    django.setup()
 
-# --- 2. FORMS ---
+# --- 2. THE DJANGO MODEL (ORM) ---
+class Item(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = '__main__'
+
+    def __str__(self):
+        return f"{self.name} ({self.email})"
+
+# --- 3. THE ORM TABLE CREATOR ---
+def initialize_database():
+    """
+    Uses the Django ORM's SchemaEditor to create tables.
+    This replaces the 'makemigrations' and 'migrate' commands.
+    """
+    with connection.schema_editor() as schema_editor:
+        if Item._meta.db_table not in connection.introspection.table_names():
+            print(f"ORM: Creating table for {Item.__name__}...")
+            schema_editor.create_model(Item)
+
+# --- 4. FORMS & VIEWS ---
 class ContactForm(Form):
-    """Simple validation form."""
     name = CharField(max_length=100)
     email = EmailField()
 
-# --- 3. TEMPLATE ---
-# HTML string with Django template tags
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Single Project</title>
-    <style>
-        body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: 0 auto; }
-        .success { color: #155724; background: #d4edda; padding: 1rem; border-radius: 5px; margin-bottom: 20px;}
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        input { padding: 8px; width: 100%; box-sizing: border-box; margin-top: 5px; }
-        button { margin-top: 15px; padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; }
-        button:hover { background: #0056b3; }
-        .errorlist { color: red; list-style: none; padding: 0; }
-    </style>
+<head><title>Django ORM Single File</title>
+<style>
+    body { font-family: system-ui; padding: 20px; max-width: 600px; margin: auto; }
+    .card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    form { background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ccc; }
+    button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+</style>
 </head>
 <body>
-    <h1>Single-File Form</h1>
-    
-    {% if message %}
-        <div class="success">{{ message }}</div>
-    {% endif %}
-
+    <h1>Django ORM (Single File)</h1>
     <form method="post">
-        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-        
+        {% csrf_token %}
         {{ form.as_p }}
-        
-        <button type="submit">Submit</button>
+        <button type="submit">Add Item via ORM</button>
     </form>
+    <hr>
+    <h2>Database Items</h2>
+    {% for item in items %}
+        <div class="card">
+            <strong>{{ item.name }}</strong><br>
+            <span style="color: #666;">{{ item.email }}</span>
+        </div>
+    {% empty %}
+        <p>No items in database yet.</p>
+    {% endfor %}
 </body>
 </html>
 """
 
-# --- 4. VIEW ---
 def form_view(request):
-    """Handles GET (show form) and POST (process data)."""
-    message = None
-    
+    # Ensure ORM tables exist
+    initialize_database()
+
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['name']
-            message = f"Success! Data received for: {name}"
-            form = ContactForm() # Clear form
+            # --- USING THE ORM TO SAVE ---
+            Item.objects.create(**form.cleaned_data)
+            form = ContactForm()
     else:
         form = ContactForm()
 
-    # Create Template object and Context
+    # --- USING THE ORM TO FETCH ---
+    items = Item.objects.all().order_by('-created_at')
+    
     template = Template(HTML_TEMPLATE)
     context = Context({
         'form': form,
-        'message': message,
-        'csrf_token': get_token(request), # Inject CSRF manually
+        'items': items,
+        'csrf_token': get_token(request),
     })
-    
     return HttpResponse(template.render(context))
 
 # --- 5. URLS & RUNNER ---
@@ -103,5 +138,10 @@ urlpatterns = [
 ]
 
 if __name__ == "__main__":
+    # 1. First, handle built-in Django migrations (sessions, auth)
+    if len(sys.argv) > 1 and sys.argv[1] == 'runserver':
+        execute_from_command_line([sys.argv[0], 'migrate', '--noinput'])
+    
+    # 2. Run the server
     application = get_wsgi_application()
     execute_from_command_line(sys.argv)
