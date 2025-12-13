@@ -12,6 +12,7 @@ from django.db import models, connection
 from django.apps import AppConfig
 from django.contrib import admin
 import os
+from django.db.models import Q
 
 # --- Configuration: Virtual App Setup ---
 class SingleFileAppConfig(AppConfig):
@@ -72,7 +73,6 @@ if not settings.configured:
     django.setup()
 
 # --- Model Imports ---
-# These imports rely on the Django App Registry being fully initialized.
 from django.contrib.auth.models import User 
 
 # --- Model Definition: Item ---
@@ -125,6 +125,8 @@ HTML_TEMPLATE = """
     .card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; }
     form { background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ccc; }
     button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+    .search-form input { padding: 10px; border: 1px solid #ccc; width: 80%; }
+    .search-form button { width: 15%; margin-left: 5%; background: #6c757d; }
 </style>
 </head>
 <body>
@@ -135,7 +137,13 @@ HTML_TEMPLATE = """
         <button type="submit">Add Item</button>
     </form>
     <hr>
-    <h2>Database Items</h2>
+    
+    <form method="get" class="search-form">
+        <input type="text" name="q" placeholder="Search by name or email" value="{{ search_query }}">
+        <button type="submit">Search</button>
+    </form>
+    
+    <h2>Database Items {% if search_query %}(Filtered){% endif %}</h2>
     {% for item in items %}
         <div class="card">
             <strong>{{ item.name }}</strong><br>
@@ -150,8 +158,10 @@ HTML_TEMPLATE = """
 
 # --- Views ---
 def form_view(request):
-    """Handles form submission and displays existing data."""
+    """Handles form submission, filtering, and displays existing data."""
     initialize_database()
+    
+    search_query = request.GET.get('q', '').strip()
 
     if request.method == 'POST':
         form = ContactForm(request.POST)
@@ -160,34 +170,40 @@ def form_view(request):
             form = ContactForm()
     else:
         form = ContactForm()
+    
+    # ORM Filtering Logic
+    items = Item.objects.all()
+    if search_query:
+        items = items.filter(
+            Q(name__icontains=search_query) | Q(email__icontains=search_query)
+        )
 
-    items = Item.objects.all().order_by('-created_at')
+    items = items.order_by('-created_at')
     
     template = Template(HTML_TEMPLATE)
     context = Context({
         'form': form,
         'items': items,
+        'search_query': search_query,
         'csrf_token': get_token(request),
     })
     return HttpResponse(template.render(context))
 
-# --- URL Routing ---
+# --- URL Routing (Static URLs are added in the execution block) ---
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", form_view, name="home"),
 ]
 
-# Append static file serving in debug mode
-if settings.DEBUG:
-    # This import is now correctly localized inside the conditional block,
-    # ensuring settings are configured when it runs.
-    from django.contrib.staticfiles.urls import staticfiles_urlpatterns 
-    urlpatterns += staticfiles_urlpatterns()
-
 # --- Main Execution Block ---
 if __name__ == "__main__":
+    
+    # Add static URL routing here, where settings.DEBUG is safe to access.
+    if settings.DEBUG:
+        from django.contrib.staticfiles.urls import staticfiles_urlpatterns 
+        urlpatterns += staticfiles_urlpatterns()
+
     if len(sys.argv) > 1 and sys.argv[1] == 'runserver':
-        # Apply system migrations and create the default user before starting the server
         print("Applying system migrations for Admin functionality...")
         execute_from_command_line([sys.argv[0], 'migrate', '--noinput'])
         create_initial_user()
