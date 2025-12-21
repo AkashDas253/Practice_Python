@@ -3,6 +3,7 @@
 ### Implementation
 - [Searching Algorithms](implementations/searching_algorithms/README.md) (Algorithms)
 - [Sorting Algorithms](implementations/sorting_algorithms/README.md) (Algorithms)
+- [Django Templates and Reusables](./implementations/django/readme.md) (Django)
 
 ### Practice Projects
 - [Calculator](projects/calculator/README.md) (GUI Application using Tkinter)
@@ -20,7 +21,7 @@
 - [Logic Expression Evaluator](./projects/logic_expression_evaluator/readme.md) (CD Concept based Application)
 - [Lexical Analyzer (Mini Lex)](./projects/mini_lex/readme.md) (CD Concept based Application)
 - [Filesystem in a File](./projects/filesystem_in_a_file/readme.md) (File System Simulator inside a file)
-
+- [Quiz Management System](./projects/flask/quiz_management_system/readme.md) (Quiz Management System using Flask)
 
 <!-- 
 ### Mini Projects
