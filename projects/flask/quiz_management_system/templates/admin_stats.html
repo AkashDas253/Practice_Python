@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stats - {{ quiz.title }}</title>
+    <style>
+        body { font-family: sans-serif; max-width: 900px; margin: 2rem auto; background: #f4f7f6; padding: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .stat-card h2 { margin: 0; color: #2196F3; font-size: 2rem; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #333; color: white; }
+        .high-score { color: #28a745; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <a href="/" style="text-decoration: none; color: #666;">← Back to Gallery</a>
+    <h1>Statistics: {{ quiz.title }}</h1>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <p>Average Score</p>
+            <h2>{{ avg }}%</h2>
+        </div>
+        <div class="stat-card">
+            <p>Highest Score</p>
+            <h2>{{ high }}%</h2>
+        </div>
+        <div class="stat-card">
+            <p>Total Students</p>
+            <h2>{{ participants }}</h2>
+        </div>
+    </div>
+
+    <h3>Student Breakdown</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Attempts</th>
+                <th>Best Score</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for res in results %}
+            <tr>
+                <td><strong>{{ res.username }}</strong></td>
+                <td>{{ res.attempt_count }}</td>
+                <td class="high-score">{{ res.best_score }}%</td>
+                <td>
+                    {% if res.best_score >= 70 %}
+                        <span style="color: green;">Passed</span>
+                    {% else %}
+                        <span style="color: red;">Failed</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

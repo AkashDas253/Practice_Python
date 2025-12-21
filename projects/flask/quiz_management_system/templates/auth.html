@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Auth - Quiz Admin</title>
+    <style>
+        :root { --error: #dc3545; --primary: #007bff; --bg: #e9ecef; }
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--bg); margin: 0; }
+        
+        .box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 340px; }
+        
+        /* Tab Switching */
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #666; font-weight: bold; transition: 0.3s; }
+        .tab.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
+
+        .error-alert { 
+            background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; 
+            padding: 10px; border-radius: 4px; margin-bottom: 15px; 
+            font-size: 0.85rem; display: none; text-align: center;
+        }
+
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,123,255,0.25); }
+        
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-top: 10px; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="box" id="authCard">
+        <div class="tabs">
+            <div id="loginTab" class="tab active" onclick="switchTab('login')">Login</div>
+            <div id="regTab" class="tab" onclick="switchTab('register')">Register</div>
+        </div>
+        
+        <div id="errorMsg" class="error-alert"></div>
+
+        <form onsubmit="handleAuth(event)">
+            <input type="text" id="username" placeholder="Username" required autocomplete="username">
+            <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+            <button type="submit" id="submitBtn">Sign In</button>
+        </form>
+    </div>
+
+    <script>
+        let currentMode = 'login';
+
+        function switchTab(mode) {
+            currentMode = mode;
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('loginTab').classList.toggle('active', mode === 'login');
+            document.getElementById('regTab').classList.toggle('active', mode === 'register');
+            document.getElementById('submitBtn').innerText = mode === 'login' ? 'Sign In' : 'Create Account';
+        }
+
+        async function handleAuth(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const errorDiv = document.getElementById('errorMsg');
+            const card = document.getElementById('authCard');
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            btn.disabled = true;
+            errorDiv.style.display = 'none';
+            card.classList.remove('shake');
+
+            try {
+                const formData = new FormData();
+                formData.append('action', currentMode); // 'login' or 'register'
+                formData.append('username', user);
+                formData.append('password', pass);
+
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = data.redirect;
+                } else {
+                    errorDiv.innerText = data.error || "Authentication failed";
+                    errorDiv.style.display = 'block';
+                    card.classList.add('shake');
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                errorDiv.innerText = "Connection lost. Try again.";
+                errorDiv.style.display = 'block';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

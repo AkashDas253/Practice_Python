@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin SPA - Quiz Creator</title>
+    <style>
+        :root { --primary: #2196F3; --success: #28a745; --bg: #f8f9fa; --danger: #f44336; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; height: 100vh; margin: 0; }
+        .sidebar { width: 320px; background: white; border-right: 1px solid #ddd; padding: 20px; overflow-y: auto; }
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .q-card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); position: relative; border-left: 5px solid #ddd; }
+        .q-card.new { border-left-color: var(--primary); }
+        .q-card.reuse { border-left-color: #9c27b0; background: #faf5ff; }
+        .remove-btn { position: absolute; top: 15px; right: 15px; color: var(--danger); cursor: pointer; font-weight: bold; }
+        .input-group { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        input[type="radio"] { width: auto; cursor: pointer; transform: scale(1.2); }
+        .btn { padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-add { background: var(--primary); color: white; margin-bottom: 20px; }
+        .btn-add:hover { background: #1976D2; }
+        .btn-submit { background: var(--success); color: white; width: 100%; font-size: 1.1rem; margin-top: 30px; }
+        .btn-submit:hover { background: #218838; }
+        .option-label { font-size: 0.8rem; color: #666; margin-bottom: 5px; display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h3>Question Bank</h3>
+        <p><small>Click to clone into this quiz</small></p>
+        <hr>
+        {% for q in question_bank %}
+        <div style="padding:12px; border:1px solid #eee; margin-bottom:8px; cursor:pointer; background:#fff; border-radius:4px;" 
+             onclick="reuseQuestion({{q.id}}, '{{q.text}}')">
+            <strong style="color:var(--primary)">ID: {{q.id}}</strong><br>
+            <span style="font-size: 0.9rem;">{{q.text[:60]}}...</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="main-content">
+        <h1>Create New Quiz</h1>
+        
+        <div class="q-card" style="border-left-color: #333;">
+            <div class="input-group"><input type="text" id="quiz-title" placeholder="Enter Quiz Title (e.g. Python Advanced)"></div>
+            <div class="input-group"><textarea id="quiz-desc" placeholder="Quiz Description..."></textarea></div>
+            <div style="display:flex; gap:15px;">
+                <div style="flex:1"><label class="option-label">Time (Mins)</label><input type="number" id="quiz-time" value="10"></div>
+                <div style="flex:1"><label class="option-label">Max Attempts</label><input type="number" id="quiz-attempts" value="3"></div>
+            </div>
+        </div>
+
+        <div id="questions-list"></div>
+
+        <button class="btn btn-add" onclick="addNewQuestion()">+ Add New Question</button>
+        <hr>
+        <button class="btn btn-submit" onclick="submitQuiz()">Publish Quiz to Gallery</button>
+    </div>
+
+    <script>
+        let questions = [];
+
+        function addNewQuestion() {
+            const id = Date.now();
+            // Default: 4 options, first one is correct
+            questions.push({ 
+                id, 
+                type: 'new', 
+                text: '', 
+                options: [
+                    { text: '', is_correct: true },
+                    { text: '', is_correct: false },
+                    { text: '', is_correct: false },
+                    { text: '', is_correct: false }
+                ]
+            });
+            render();
+        }
+
+        function reuseQuestion(id, text) {
+            questions.push({ id, type: 'reuse', text: text, original_id: id });
+            render();
+        }
+
+        function removeQuestion(id) {
+            questions = questions.filter(q => q.id !== id);
+            render();
+        }
+
+        function setCorrect(qIdx, optIdx) {
+            questions[qIdx].options.forEach((opt, i) => {
+                opt.is_correct = (i === optIdx);
+            });
+            render();
+        }
+
+        function render() {
+            const list = document.getElementById('questions-list');
+            list.innerHTML = questions.map((q, qIdx) => `
+                <div class="q-card ${q.type}">
+                    <span class="remove-btn" onclick="removeQuestion(${q.id})">REMOVE</span>
+                    <strong>Question ${qIdx + 1}</strong> <small>[${q.type.toUpperCase()}]</small>
+                    
+                    ${q.type === 'new' ? `
+                        <input type="text" onchange="questions[${qIdx}].text = this.value" value="${q.text}" 
+                               placeholder="Type your question here..." style="margin:15px 0; font-weight:bold; border-color:var(--primary);">
+                        
+                        <label class="option-label">Options (Mark the radio button for the CORRECT answer):</label>
+                        
+                        ${q.options.map((opt, optIdx) => `
+                            <div class="input-group">
+                                <input type="radio" name="correct_${q.id}" ${opt.is_correct ? 'checked' : ''} 
+                                       onchange="setCorrect(${qIdx}, ${optIdx})">
+                                <input type="text" value="${opt.text}" 
+                                       onchange="questions[${qIdx}].options[${optIdx}].text = this.value" 
+                                       placeholder="Option ${optIdx + 1}"
+                                       style="${opt.is_correct ? 'border: 2px solid var(--success); background: #f0fff4;' : ''}">
+                            </div>
+                        `).join('')}
+                    ` : `
+                        <p style="margin:15px 0; color:#555;">${q.text}</p>
+                        <p style="font-size:0.75rem; color:#9c27b0;">Cloning content from Question ID: ${q.original_id}</p>
+                    `}
+                </div>
+            `).join('');
+        }
+
+        async function submitQuiz() {
+            const payload = {
+                title: document.getElementById('quiz-title').value,
+                description: document.getElementById('quiz-desc').value,
+                time_limit: document.getElementById('quiz-time').value,
+                max_attempts: document.getElementById('quiz-attempts').value,
+                questions: questions
+            };
+
+            if (!payload.title) return alert("Please enter a quiz title.");
+            if (questions.length === 0) return alert("Add at least one question.");
+
+            const response = await fetch('/admin/create-quiz', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            if (result.status === 'success') window.location.href = result.redirect;
+        }
+    </script>
+</body>
+</html>

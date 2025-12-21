@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Gallery</title>
+    <style>
+        body { font-family: sans-serif; max-width: 900px; margin: 2rem auto; background: #f4f4f4; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        
+        /* Admin Section Styling */
+        .admin-banner { 
+            background: #fff3cd; border: 1px solid #ffeeba; padding: 15px; 
+            border-radius: 8px; margin-bottom: 20px; display: flex; 
+            justify-content: space-between; align-items: center;
+        }
+        .admin-tag { background: #856404; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-top: 4px solid #2196F3; display: flex; flex-direction: column; }
+        .card h3 { margin-top: 0; color: #333; }
+        .meta { color: #666; font-size: 0.85rem; margin-bottom: 15px; line-height: 1.6; flex-grow: 1; }
+        
+        .btn { display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 4px; font-weight: bold; transition: 0.3s; margin-top: 8px; }
+        .btn-start { background: #2196F3; color: white; }
+        .btn-resume { background: #4CAF50; color: white; }
+        .btn-admin { background: #343a40; color: white; }
+        .btn-stats { background: #673ab7; color: white; }
+        .btn-stats:hover { background: #5e35b1; }
+        
+        .btn-disabled { background: #ccc; color: #666; cursor: not-allowed; }
+        .logout { color: #f44336; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Available Quizzes</h1>
+        <div>
+            <span>Welcome, <strong>{{ session['username'] }}</strong> 
+                {% if user.role == 'admin' %}<span class="admin-tag">Admin</span>{% endif %}
+            </span> | 
+            <a href="/logout" class="logout">Logout</a>
+        </div>
+    </div>
+
+    {% if user.role == 'admin' %}
+    <div class="admin-banner">
+        <div>
+            <h4 style="margin: 0; color: #856404;">Admin Control Panel</h4>
+            <small>Manage your quiz catalog and view student progress.</small>
+        </div>
+        <a href="/admin/create-quiz" class="btn btn-admin" style="padding: 8px 15px;">+ Create New Quiz</a>
+    </div>
+    {% endif %}
+
+    <div class="grid">
+        {% for q in quizzes %}
+        <div class="card">
+            <h3>{{ q.info.title }}</h3>
+            <p>{{ q.info.description }}</p>
+            
+            <div class="meta">
+                ⏱ Time Limit: 
+                {% if q.info.time_limit == 0 %}
+                    <strong>Unlimited</strong>
+                {% else %}
+                    {{ q.info.time_limit }} mins
+                {% endif %}
+                <br>
+                
+                📊 Attempts: 
+                {% if q.info.max_attempts == 0 %}
+                    {{ q.completed }} / <strong>∞ Infinite</strong>
+                {% else %}
+                    {{ q.completed }} / {{ q.info.max_attempts }}
+                {% endif %}
+            </div>
+            
+            {% if q.active_id %}
+                <a href="/attempt/{{ q.active_id }}" class="btn btn-resume">Resume Quiz</a>
+            {% elif q.info.max_attempts == 0 or q.completed < q.info.max_attempts %}
+                <a href="/quiz/{{ q.info.id }}/start" class="btn btn-start">
+                    {% if q.info.max_attempts == 0 %}
+                        Start New Attempt
+                    {% else %}
+                        Start Attempt {{ q.completed + 1 }}
+                    {% endif %}
+                </a>
+            {% else %}
+                <a href="#" class="btn btn-disabled">Max Attempts Reached</a>
+            {% endif %}
+
+            {% if user.role == 'admin' %}
+                <a href="/admin/quiz/{{ q.info.id }}/stats" class="btn btn-stats">View Quiz Stats</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

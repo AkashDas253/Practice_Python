@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; display: flex; }
+        .sidebar { width: 250px; background: #343a40; color: white; height: 100vh; padding: 20px; }
+        .content { flex: 1; padding: 40px; }
+        .stats-row { display: flex; gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; flex: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .quiz-table { width: 100%; border-collapse: collapse; background: white; }
+        .quiz-table th, .quiz-table td { padding: 15px; border-bottom: 1px solid #ddd; text-align: left; }
+        .btn { padding: 8px 12px; border-radius: 4px; text-decoration: none; color: white; font-size: 0.9rem; }
+        .btn-create { background: #28a745; }
+        .btn-stats { background: #673ab7; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <p>Logged in as: {{ session['username'] }}</p>
+        <hr>
+        <a href="/admin/create-quiz" style="color: #007bff; text-decoration: none;">+ New Quiz</a><br><br>
+        <a href="/logout" style="color: #ff4d4d; text-decoration: none;">Logout</a>
+    </div>
+
+    <div class="content">
+        <h1>Dashboard Overview</h1>
+        <div class="stats-row">
+            <div class="stat-card"><h3>Total Students</h3><p>{{ total_users }}</p></div>
+            <div class="stat-card"><h3>Total Attempts</h3><p>{{ total_attempts }}</p></div>
+            <div class="stat-card"><h3>Active Quizzes</h3><p>{{ quizzes|length }}</p></div>
+        </div>
+
+        <h3>Manage Quiz Catalog</h3>
+        <table class="quiz-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Time Limit</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for q in quizzes %}
+                <tr>
+                    <td><strong>{{ q.title }}</strong></td>
+                    <td>{{ q.time_limit }} mins</td>
+                    <td>
+                        <a href="/admin/quiz/{{ q.id }}/stats" class="btn btn-stats">Analytics</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
