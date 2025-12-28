@@ -17,7 +17,7 @@ class LinkCreateView(LoginRequiredMixin, CreateView):
     model = Link
     template_name = 'links/link_form.html'
     fields = ['original_url']
-    success_url = reverse_lazy('link-list')
+    success_url = reverse_lazy('link-list') 
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
@@ -29,7 +29,5 @@ class LinkRedirectView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         short_code = kwargs.get('short_code')
         link = get_object_or_404(Link, short_code=short_code)
-        
         Link.objects.filter(id=link.id).update(clicks=F('clicks') + 1)
-        
         return link.original_url

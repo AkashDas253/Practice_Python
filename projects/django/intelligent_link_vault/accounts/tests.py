@@ -10,13 +10,14 @@ User = get_user_model()
 class AccountTests(APITestCase):
 
     def setUp(self):
-        self.register_url = reverse('user-register-api')
-        self.login_url = reverse('api_token_auth')
-        self.me_url = reverse('user-me-api')
+        self.register_url = reverse('api-register')
+        self.login_url = reverse('api-login')
+        self.me_url = reverse('api-me')
         self.user_data = {
             'username': 'testuser',
             'email': 'test@example.com',
-            'password': 'securepassword123'
+            'password': 'securepassword123',
+            'confirm_password': 'securepassword123'
         }
 
     # REGISTRATION TESTS
@@ -31,7 +32,7 @@ class AccountTests(APITestCase):
 
     def test_registration_duplicate_username(self):
         """Test that registering an existing username fails."""
-        User.objects.create_user(**self.user_data)
+        User.objects.create_user(username='testuser', email='test@example.com', password='password123')
         response = self.client.post(self.register_url, self.user_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 

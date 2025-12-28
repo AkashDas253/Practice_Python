@@ -1,10 +1,10 @@
+
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from .views import register_view
-from rest_framework.authtoken.views import obtain_auth_token 
-from .api_views import CurrentUserAPIView, RegisterAPIView
 
 urlpatterns = [
     path('register/', register_view, name='register'),
-    path('login/', obtain_auth_token, name='api_token_auth'),
-    path('me/', CurrentUserAPIView.as_view(), name='api_me'),
+    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'), 
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]

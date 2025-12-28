@@ -15,4 +15,6 @@ class LinkSerializer(serializers.ModelSerializer):
 
     def get_full_short_url(self, obj):
         request = self.context.get('request')
-        return request.build_absolute_uri(f'/go/{obj.short_code}/')
+        if request is not None:
+            return request.build_absolute_uri(f'/go/{obj.short_code}/')
+        return f'/go/{obj.short_code}/'

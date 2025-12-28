@@ -17,17 +17,19 @@ class SystemIntegrationTests(APITestCase):
         mock_get.return_value.status_code = 200
         mock_get.return_value.content = b"<html><title>Integration Success</title></html>"
 
-        reg_url = reverse('user-register-api')
+        reg_url = reverse('api-register')
         user_data = {
             'username': 'integrator',
             'email': 'int@test.com',
-            'password': 'password123'
+            'password': 'password123',
+            'confirm_password': 'password123' 
         }
         reg_response = self.client.post(reg_url, user_data, format='json')
         self.assertEqual(reg_response.status_code, status.HTTP_201_CREATED)
         token = reg_response.data['token']
 
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        
         link_url = reverse('link-vault-list')
         link_data = {'original_url': 'https://test-integration.com'}
         
@@ -35,7 +37,7 @@ class SystemIntegrationTests(APITestCase):
         self.assertEqual(link_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(link_response.data['title'], "Integration Success")
 
-        me_url = reverse('user-me-api')
+        me_url = reverse('api-me')
         me_response = self.client.get(me_url)
         
         self.assertEqual(me_response.status_code, status.HTTP_200_OK)

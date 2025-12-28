@@ -76,8 +76,8 @@ class LinkComprehensiveTests(APITestCase):
         self.assertEqual(Link.objects.filter(owner=self.user).count(), 2)
 
     def test_api_delete_link(self):
-        """Test deleting a link via the API."""
-        url = reverse('link-vault-detail', kwargs={'pk': self.link.pk})
+        """Test deleting a link via the API using short_code lookup."""
+        url = reverse('link-vault-detail', kwargs={'short_code': self.link.short_code})
         response = self.client.delete(url)
         
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

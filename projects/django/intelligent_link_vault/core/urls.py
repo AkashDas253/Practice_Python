@@ -19,17 +19,13 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-
-    # Admin
     path('admin/', admin.site.urls),
+    
+    # API Routes 
+    path('api/accounts/', include('accounts.urls_api')),
+    path('api/links/', include('links.urls_api')),
 
-    # Web Page
+    # Web Routes
     path('accounts/', include('accounts.urls')), 
-    path('accounts/', include('django.contrib.auth.urls')), 
     path('', include('links.urls')),
-
-    # API
-    path('api/accounts/', include('accounts.urls_api')), 
-    path('api/links/', include('links.urls_api')), 
-    path('api-auth/', include('rest_framework.urls')),
 ]
