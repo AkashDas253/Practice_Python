@@ -22,6 +22,7 @@
 - [Lexical Analyzer (Mini Lex)](./projects/mini_lex/readme.md) (CD Concept based Application)
 - [Filesystem in a File](./projects/filesystem_in_a_file/readme.md) (File System Simulator inside a file)
 - [Quiz Management System](./projects/flask/quiz_management_system/readme.md) (Quiz Management System using Flask)
+- [Intelligent Link Vault](./projects/django/intelligent_link_vault/readme.md) (A secure, token-authenticated URL management API with automated metadata scraping and real-time analytics using Django and DjangoRESTFramework)
 
 <!-- 
 ### Mini Projects
