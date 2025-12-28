@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-lg shadow-xl overflow-hidden mt-10">
+    <div class="bg-indigo-600 p-4">
+        <h2 class="text-white text-xl font-bold">Add New Link</h2>
+    </div>
+    <form method="post" class="p-6">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Target URL</label>
+            <input type="url" name="original_url" required 
+                   placeholder="https://example.com"
+                   class="shadow appearance-none border rounded w-full py-3 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <p class="text-xs text-gray-500 mt-2 italic">We'll automatically fetch the page title for you.</p>
+        </div>
+        
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded shadow-lg transition duration-200">
+                Save Link
+            </button>
+            <a href="{% url 'link-list' %}" class="text-gray-600 hover:text-gray-800 text-sm font-semibold">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
