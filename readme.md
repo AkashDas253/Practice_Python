@@ -23,6 +23,7 @@
 - [Filesystem in a File](./projects/filesystem_in_a_file/readme.md) (File System Simulator inside a file)
 - [Quiz Management System](./projects/flask/quiz_management_system/readme.md) (Quiz Management System using Flask)
 - [Intelligent Link Vault](./projects/django/intelligent_link_vault/readme.md) (A secure and intelligent URL management System with REST API using Django and DjangoRESTFramework)
+- [Lexical Analyzer (Mini Lex)](./projects/modular_filter_engine/readme.md) (CD Concept based Application)
 
 <!-- 
 ### Mini Projects
