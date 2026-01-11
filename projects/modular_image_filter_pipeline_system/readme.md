@@ -1,4 +1,4 @@
-# Modular Filter Engine
+# Modular Image Filter Pipeline System
 
 A real-time computer vision application that applies a sequential image-processing pipeline to a live webcam feed. This tool allows for dynamic layering of filters using a modular GUI built with Python, OpenCV, and Tkinter.
 
