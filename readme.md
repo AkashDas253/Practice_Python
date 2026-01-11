@@ -23,6 +23,7 @@
 - [Filesystem in a File](./projects/filesystem_in_a_file/readme.md) (File System Simulator inside a file)
 - [Quiz Management System](./projects/flask/quiz_management_system/readme.md) (Quiz Management System using Flask)
 - [Intelligent Link Vault](./projects/django/intelligent_link_vault/readme.md) (A secure and intelligent URL management System with REST API using Django and DjangoRESTFramework)
+- [DSP Sandbox](./projects/dsp_sandbox/readme.md) (A real-time Digital Signal Processing sandbox for waveform generation and FFT analysis using NumPy and Matplotlib)
 
 <!-- 
 ### Mini Projects
