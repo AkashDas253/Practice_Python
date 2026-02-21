@@ -3,7 +3,6 @@
 ### Implementation
 - [Searching Algorithms](implementations/searching_algorithms/README.md) (Algorithms)
 - [Sorting Algorithms](implementations/sorting_algorithms/README.md) (Algorithms)
-- [Django Templates and Reusables](./implementations/django/readme.md) (Django)
 
 ### Practice Projects
 - [Calculator](projects/calculator/README.md) (GUI Application using Tkinter)
@@ -22,7 +21,6 @@
 - [Lexical Analyzer (Mini Lex)](./projects/mini_lex/readme.md) (CD Concept based Application)
 - [Filesystem in a File](./projects/filesystem_in_a_file/readme.md) (File System Simulator inside a file)
 - [Quiz Management System](./projects/flask/quiz_management_system/readme.md) (Quiz Management System using Flask)
-- [Intelligent Link Vault](./projects/django/intelligent_link_vault/readme.md) (A secure and intelligent URL management System with REST API using Django and DjangoRESTFramework)
 - [Modular Image Filter Pipeline System](./projects/modular_image_filter_pipeline_system/readme.md) (A modular real-time pipeline based image filter system using tkinter and cv2)
 - [DSP Sandbox](./projects/dsp_sandbox/readme.md) (A real-time Digital Signal Processing sandbox for waveform generation and FFT analysis using NumPy and Matplotlib)
 
